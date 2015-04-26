@@ -9,7 +9,7 @@ public class User {
     private int id;
     private String name;
     private String email;
-    private ArrayList<Group> groups = new ArrayList<Group>();
+    private ArrayList<Integer> groups = new ArrayList<Integer>();
     private ArrayList<Notification> notifications = new ArrayList<Notification>();
     private ArrayList<Payment> payments = new ArrayList<Payment>();
     private ArrayList<Event> events = new ArrayList<Event>();
@@ -44,11 +44,11 @@ public class User {
         this.email = email;
     }
 
-    public ArrayList<Group> getGroups() {
+    public ArrayList<Integer> getGroups() {
         return groups;
     }
 
-    public void setGroups(ArrayList<Group> groups) {
+    public void setGroups(ArrayList<Integer> groups) {
         this.groups = groups;
     }
 

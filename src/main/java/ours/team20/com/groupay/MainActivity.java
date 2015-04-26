@@ -82,7 +82,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         @Override
         protected JSONObject doInBackground(Void... params) {
             DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpPostReq = new HttpPost("http://10.189.175.158:3000/user/login");
+            HttpPost httpPostReq = new HttpPost("http://172.16.0.12:3000/user/login");
             User user = new User(1, "Sumit", "svalecha91@gmail.com");
             JSONObject jsonObject = null;
             try {

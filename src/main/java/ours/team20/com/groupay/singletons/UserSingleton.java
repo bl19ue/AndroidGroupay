@@ -8,7 +8,7 @@ import ours.team20.com.groupay.models.User;
 public class UserSingleton {
     private static User user;
     public UserSingleton(User user){
-        if(this.user != null) {
+        if(this.user == null) {
             this.user = user;
         }
     }
