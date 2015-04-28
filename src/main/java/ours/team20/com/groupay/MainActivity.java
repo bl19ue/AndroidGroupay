@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,27 +23,113 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import ours.team20.com.groupay.models.User;
 import ours.team20.com.groupay.singletons.UserSingleton;
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+public class MainActivity extends ActionBarActivity{
+    CallbackManager callbackManager;
+    AccessToken accessToken;
+    String userId = null;
 
-    private EditText nameText;
-    private Button loginButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
+
+        // Chk if user already logged In.
+        if(savedInstanceState == null){
+            Log.d("USER", "FirstLaunch");
+        } else {
+            String myUser = savedInstanceState.getString("UserID");
+            Log.d("USER",myUser);
+            ApiCall();
+        }
+
         setContentView(R.layout.activity_main);
 
-        nameText = (EditText) findViewById(R.id.name);
-        loginButton = (Button) findViewById(R.id.login);
+        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
+        callbackManager = CallbackManager.Factory.create();
 
-        loginButton.setOnClickListener(this);
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                accessToken = loginResult.getAccessToken();
+                String token = accessToken.getToken();
+                Log.d("success Name :", token);
+                ApiCall();
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d("canceled:" , "canceled");
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                Log.d("error:" , "error");
+            }
+        });
     }
 
+    public void onSavedInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+        savedInstanceState.putString("userID", userId);
+    }
+
+    public void ApiCall() {
+        GraphRequest request = GraphRequest.newMeRequest(
+                accessToken,
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        // Application code
+                        String data = response.getRawResponse();
+                        try {
+                            JSONObject obj = new JSONObject(data);
+//                            userId = obj.getString("id");
+//                            String name = obj.getString("name");
+//                            String URL = obj.getJSONObject("picture").getJSONObject("data").getString("url");
+//                            Log.d("URL",URL);
+//                            intent = new Intent(MainActivity.this, LoggedinActivity.class);
+//                            intent.putExtra("UserId", userId);
+//                            intent.putExtra("UserName", name);
+//                            intent.putExtra("Profile",URL);
+                            new LoginRest().execute(obj);
+                            //startActivity(intent);
+//                            finish();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields","id, name, picture");
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,24 +154,29 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     }
 
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.login: {
-                //Authenticate through facebook
-                new LoginRest().execute();
-            }
-        }
-    }
-
     //To make rest request for logging into the app
-    private class LoginRest extends AsyncTask<Void, Void, JSONObject>{
+    private class LoginRest extends AsyncTask<JSONObject, Void, JSONObject>{
 
         @Override
-        protected JSONObject doInBackground(Void... params) {
+        protected JSONObject doInBackground(JSONObject... params) {
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpPost httpPostReq = new HttpPost("http://10.189.174.125:3000/user/login");
-            User user = new User("553b12369a98040c20e8332f", "Sumit", "svalecha91@gmail.com");
+
+            JSONObject userObj = params[0];
+            String name = null;
+            String URL = null;
+            try {
+                userId = userObj.getString("id");
+                name = userObj.getString("name");
+                URL = userObj.getJSONObject("picture").getJSONObject("data").getString("url");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if(userId == null || name == null || URL == null){
+                return null;
+            }
+            User user = new User(userId, name, URL);
             JSONObject jsonObject = null;
             try {
                 StringEntity se = new StringEntity(user.toJSONObject().toString());
@@ -113,10 +205,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 try {
                     user = new User(userObj.getJSONObject("data").getString("userid"),
                             userObj.getJSONObject("data").getString("name"),
-                            userObj.getJSONObject("data").getString("email"));
+                            userObj.getJSONObject("data").getString("URL"));
                     UserSingleton userSingleton = new UserSingleton(user);
                     Intent goToLoggedinIntent = new Intent(MainActivity.this, LoggedinActivity.class);
                     startActivity(goToLoggedinIntent);
+                    finish();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

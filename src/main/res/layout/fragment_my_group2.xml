@@ -10,7 +10,7 @@
             android:id="@+id/create_group"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:text="Create"
+            android:text="@string/btnCreate"
             android:textSize="30sp"/>
 
         <ListView

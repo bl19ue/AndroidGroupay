@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class User {
     private String id;
     private String name;
-    private String email;
+    private String URL;
     private ArrayList<String> groups = new ArrayList<String>();
     private ArrayList<Notification> notifications = new ArrayList<Notification>();
     private ArrayList<Payment> payments = new ArrayList<Payment>();
@@ -17,7 +17,7 @@ public class User {
     public User(String id, String name, String email){
         this.id = id;
         this.name = name;
-        this.email = email;
+        this.URL = email;
     }
 
     public String getId() {
@@ -36,12 +36,12 @@ public class User {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public String getURL() {
+        return URL;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setURL(String email) {
+        this.URL = email;
     }
 
     public ArrayList<String> getGroups() {
@@ -81,7 +81,7 @@ public class User {
         try {
             jsonObject.put("userid", id);
             jsonObject.put("name", name);
-            jsonObject.put("email", email);
+            jsonObject.put("URL", URL);
         } catch (JSONException e) {
             e.printStackTrace();
         }

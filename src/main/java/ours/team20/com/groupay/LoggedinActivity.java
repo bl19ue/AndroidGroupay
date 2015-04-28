@@ -2,11 +2,19 @@ package ours.team20.com.groupay;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+
+import com.facebook.AccessToken;
+
+import java.io.IOException;
+
+import ours.team20.com.groupay.imagedownloader.DownloadImage;
 
 
 public class LoggedinActivity extends ActionBarActivity {
@@ -24,7 +32,7 @@ public class LoggedinActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_loggedin, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -34,12 +42,27 @@ public class LoggedinActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id){
+            case R.id.action_logout:
+                logout();
+                return true;
+            case R.id.action_settings:
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void logout(){
+        AccessToken.setCurrentAccessToken(null);
+        Intent intent = new Intent(LoggedinActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
+    private void setProfileImage(String src) throws IOException {
+        ImageView iv = (ImageView)findViewById(R.id.image_profile);
+        new DownloadImage(iv).execute(src);
     }
 
     private void displayView(int position){

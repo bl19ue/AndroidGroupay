@@ -6,6 +6,13 @@
     <string name="title_activity_loggedin">LoggedinActivity</string>
     <string name="title_activity_group">GroupActivity</string>
 
+    <string name="application">Group Pay</string>
+    <string name="caption_welcome">Welcome to group pay. Register or login to Group Pay using Fb button below.</string>
+    <string name="facebook_app_id">1585184785064506</string>
+    <string name="action_logout">Logout</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="btnCreate">Create Group</string>
+
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
