@@ -6,25 +6,25 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class User {
-    private int id;
+    private String id;
     private String name;
     private String email;
-    private ArrayList<Integer> groups = new ArrayList<Integer>();
+    private ArrayList<String> groups = new ArrayList<String>();
     private ArrayList<Notification> notifications = new ArrayList<Notification>();
     private ArrayList<Payment> payments = new ArrayList<Payment>();
     private ArrayList<Event> events = new ArrayList<Event>();
 
-    public User(int id, String name, String email){
+    public User(String id, String name, String email){
         this.id = id;
         this.name = name;
         this.email = email;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -44,11 +44,11 @@ public class User {
         this.email = email;
     }
 
-    public ArrayList<Integer> getGroups() {
+    public ArrayList<String> getGroups() {
         return groups;
     }
 
-    public void setGroups(ArrayList<Integer> groups) {
+    public void setGroups(ArrayList<String> groups) {
         this.groups = groups;
     }
 

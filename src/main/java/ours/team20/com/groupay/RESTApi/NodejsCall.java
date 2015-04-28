@@ -22,7 +22,7 @@ import ours.team20.com.groupay.models.User;
  * Created by Ken on 4/24/2015.
  */
 public class NodejsCall {
-    public static String NODEJS = "http://172.16.0.12:3000";
+    public static String NODEJS = "http://10.189.174.125:3000";
 
     public static JSONObject get(String url){
         JSONObject resJsonObject = null;
@@ -85,7 +85,7 @@ public class NodejsCall {
             String responseText = EntityUtils.toString(httpResponse.getEntity());
             JSONObject jsonObject = new JSONObject(responseText);
 
-            resJsonArray= jsonObject.getJSONArray("data");
+            resJsonArray = jsonObject.getJSONArray("data");
 
 
         } catch (UnsupportedEncodingException e) {

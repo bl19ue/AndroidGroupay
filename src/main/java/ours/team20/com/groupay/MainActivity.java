@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -82,8 +83,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         @Override
         protected JSONObject doInBackground(Void... params) {
             DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpPostReq = new HttpPost("http://172.16.0.12:3000/user/login");
-            User user = new User(1, "Sumit", "svalecha91@gmail.com");
+            HttpPost httpPostReq = new HttpPost("http://10.189.174.125:3000/user/login");
+            User user = new User("553b12369a98040c20e8332f", "Sumit", "svalecha91@gmail.com");
             JSONObject jsonObject = null;
             try {
                 StringEntity se = new StringEntity(user.toJSONObject().toString());
@@ -96,14 +97,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 jsonObject = new JSONObject(responseText);
 
 
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+                Toast.makeText(MainActivity.this,
+                        "There is some problem connecting to the server", Toast.LENGTH_LONG).show();
             }
 
             return jsonObject;
@@ -114,7 +111,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             User user = null;
             if(userObj != null)
                 try {
-                    user = new User(userObj.getJSONObject("data").getInt("userid"),
+                    user = new User(userObj.getJSONObject("data").getString("userid"),
                             userObj.getJSONObject("data").getString("name"),
                             userObj.getJSONObject("data").getString("email"));
                     UserSingleton userSingleton = new UserSingleton(user);
