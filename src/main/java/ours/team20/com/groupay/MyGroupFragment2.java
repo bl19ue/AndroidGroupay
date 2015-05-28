@@ -10,12 +10,14 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -57,22 +59,27 @@ public class MyGroupFragment2 extends Fragment implements View.OnClickListener{
         createGroupButton = (Button) v.findViewById(R.id.create_group);
         createGroupButton.setOnClickListener(this);
         myGroupList = (ListView) v.findViewById(R.id.group_list);
-
-        myGroupList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "position:" + user.getGroups().get(position)
-                        , Toast.LENGTH_SHORT).show();
-
-                Intent groupIntent = new Intent(getActivity(), GroupActivity.class);
-                groupIntent.putExtra("groupid", user.getGroups().get(position));
-                startActivity(groupIntent);
-            }
-        });
+        ItemListenerClass itemListenerClass = new ItemListenerClass();
+        myGroupList.setOnItemClickListener(itemListenerClass);
 
         new GetMyGroupsTask().execute();
+
         return v;
+    }
+
+    private class ItemListenerClass implements AdapterView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Toast.makeText(getActivity(), "position:" + user.getGroups().get(position)
+                    , Toast.LENGTH_SHORT).show();
+
+            Intent groupIntent = new Intent(getActivity(), GroupActivity.class);
+            String groupname = ((Item)myGroupList.getItemAtPosition(position)).getName();
+            groupIntent.putExtra("groupid", user.getGroups().get(position));
+            groupIntent.putExtra("groupname", groupname);
+            startActivity(groupIntent);
+        }
     }
 
 
@@ -127,6 +134,7 @@ public class MyGroupFragment2 extends Fragment implements View.OnClickListener{
             }
         }
     }
+
 
     public void createDialog(View v){
         final Dialog createGroupDialog = new Dialog(getActivity());
@@ -242,4 +250,6 @@ public class MyGroupFragment2 extends Fragment implements View.OnClickListener{
             }
         }
     }
+
+
 }

@@ -55,7 +55,7 @@ public class MainActivity extends ActionBarActivity{
             Log.d("USER", "FirstLaunch");
         } else {
             String myUser = savedInstanceState.getString("UserID");
-            Log.d("USER",myUser);
+            //Log.d("USER",myUser);
             ApiCall();
         }
 
@@ -67,6 +67,7 @@ public class MainActivity extends ActionBarActivity{
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+
                 accessToken = loginResult.getAccessToken();
                 String token = accessToken.getToken();
                 Log.d("success Name :", token);
@@ -83,9 +84,14 @@ public class MainActivity extends ActionBarActivity{
                 Log.d("error:" , "error");
             }
         });
+
+//        if(loginButton.getText().equals("Log out")){
+//            ApiCall();
+//        }
     }
 
-    public void onSavedInstanceState(Bundle savedInstanceState) {
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         // Save UI state changes to the savedInstanceState.
         // This bundle will be passed to onCreate if the process is
@@ -111,7 +117,7 @@ public class MainActivity extends ActionBarActivity{
 //                            intent.putExtra("UserId", userId);
 //                            intent.putExtra("UserName", name);
 //                            intent.putExtra("Profile",URL);
-                            new LoginRest().execute(obj);
+                            new LoginRest().executeOnExecutor(MyExecutor.getExecutor(), obj);
                             //startActivity(intent);
 //                            finish();
                         } catch (JSONException e) {
@@ -160,7 +166,7 @@ public class MainActivity extends ActionBarActivity{
         @Override
         protected JSONObject doInBackground(JSONObject... params) {
             DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpPostReq = new HttpPost("http://10.189.174.125:3000/user/login");
+            HttpPost httpPostReq = new HttpPost("http://10.189.174.58:3000/user/login");
 
             JSONObject userObj = params[0];
             String name = null;
@@ -193,6 +199,7 @@ public class MainActivity extends ActionBarActivity{
                 e.printStackTrace();
                 Toast.makeText(MainActivity.this,
                         "There is some problem connecting to the server", Toast.LENGTH_LONG).show();
+
             }
 
             return jsonObject;
@@ -216,5 +223,6 @@ public class MainActivity extends ActionBarActivity{
 
         }
     }
+
 
 }

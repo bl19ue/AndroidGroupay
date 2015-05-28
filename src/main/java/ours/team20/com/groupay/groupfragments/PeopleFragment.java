@@ -1,6 +1,7 @@
 package ours.team20.com.groupay.groupfragments;
 
 
+import android.app.ActionBar;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,7 +18,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+import ours.team20.com.groupay.LoggedinActivity;
+import ours.team20.com.groupay.MyExecutor;
 import ours.team20.com.groupay.R;
 import ours.team20.com.groupay.RESTApi.NodejsCall;
 import ours.team20.com.groupay.listadapter.Item;
@@ -45,10 +53,23 @@ public class PeopleFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_people, container, false);
         userListView = (ListView) v.findViewById(R.id.people);
-        groupName = (TextView) v.findViewById(R.id.group_name);
-        new GroupDetailFetcher().execute();
+        //groupName = (TextView) v.findViewById(R.id.group_name);
+
+        new GroupDetailFetcher().executeOnExecutor(MyExecutor.getExecutor());
+
+        ActionBar actionBar = getActivity().getActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(null);
+            actionBar.setHomeButtonEnabled(false); // disable the button
+            actionBar.setDisplayHomeAsUpEnabled(false); // remove the left caret
+            actionBar.setDisplayShowHomeEnabled(false); // remove the icon
+        }
+
+
         return v;
     }
+
+
 
     private class GroupDetailFetcher extends AsyncTask<Void, Void, JSONArray>{
 
@@ -74,9 +95,14 @@ public class PeopleFragment extends Fragment {
             return userList;
         }
 
+
+
         @Override
         public void onPostExecute(JSONArray userList){
+            String groupname = getActivity().getIntent().getStringExtra("groupname");
+
             ArrayList<String> userListString = new ArrayList<>();
+            userListString.add(UserSingleton.getCurrentUser().getName());
             for(int i=0;i<userList.length();i++){
                 try {
                     userListString.add(userList.getJSONObject(i).getString("name"));
@@ -89,5 +115,7 @@ public class PeopleFragment extends Fragment {
             userListView.setAdapter(listAdapter);
         }
     }
+
+
 
 }

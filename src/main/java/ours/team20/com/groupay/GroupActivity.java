@@ -22,7 +22,7 @@ public class GroupActivity extends ActionBarActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.setTitle(getIntent().getStringExtra("groupid"));
+        actionBar.setTitle(getIntent().getStringExtra("groupname"));
 
         ActionBar.Tab peopleTab = actionBar.newTab().setText("People");//.setIcon();
         ActionBar.Tab paymentTab = actionBar.newTab().setText("Payments");

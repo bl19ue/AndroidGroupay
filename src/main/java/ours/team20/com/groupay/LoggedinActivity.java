@@ -3,30 +3,120 @@ package ours.team20.com.groupay;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import com.facebook.AccessToken;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import ours.team20.com.groupay.drawer.NavigationDrawerItem;
+import ours.team20.com.groupay.drawer.NavigationDrawerListAdapter;
 import ours.team20.com.groupay.imagedownloader.DownloadImage;
 
 
-public class LoggedinActivity extends ActionBarActivity {
+public class LoggedinActivity extends ActionBarActivity implements View.OnClickListener{
     private Fragment fragment = null;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
+
+    private ListView drawerList;
+
+    //Navigation Drawer Title
+    private CharSequence drawerTitle;
+
+    private String[] menuTitles;
+    private TypedArray menuIcons;
+
+    private ArrayList<NavigationDrawerItem> navDrawerItems;
+    private NavigationDrawerListAdapter naviDrawerListAdapter;
+    private Button createGroupButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loggedin);
 
+        drawerTitle = getTitle();
+
+        menuTitles = getResources().getStringArray(R.array.nav_drawer_items);
+
+        menuIcons = getResources().obtainTypedArray(R.array.nav_drawer_icons);
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        View header = getLayoutInflater().inflate(R.layout.header, null);
+
+
+        drawerList = (ListView) findViewById(R.id.list_slider_menu);
+        drawerList.addHeaderView(header);
+        navDrawerItems = new ArrayList<NavigationDrawerItem>();
+
+        for(int i = 0; i < menuTitles.length; i++){
+            navDrawerItems.add(new NavigationDrawerItem(menuTitles[i], menuIcons.getDrawable(i)));
+        }
+
+        drawerList.setOnItemClickListener(new SlideMenuClickListener());
+
+
+        naviDrawerListAdapter = new NavigationDrawerListAdapter(getApplicationContext(),
+                navDrawerItems);
+        drawerList.setAdapter(naviDrawerListAdapter);
+
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setHomeButtonEnabled(true);
+
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+                new Toolbar(LoggedinActivity.this),
+                R.string.app_name,
+                R.string.app_name)
+        {
+            public void onDrawerClosed(View v){
+                getSupportActionBar().setTitle(drawerTitle);
+
+
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView){
+                getSupportActionBar().setTitle(drawerTitle);
+
+
+                invalidateOptionsMenu();
+            }
+        };
+
+        drawerLayout.setDrawerListener(drawerToggle);
+        getSupportActionBar().hide();
         displayView(0);
+
     }
 
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    private class SlideMenuClickListener implements ListView.OnItemClickListener{
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position,
+                                long id) {
+
+            displayView(position);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -74,10 +164,14 @@ public class LoggedinActivity extends ActionBarActivity {
                 fragment = new MyGroupFragment2();
                 break;
             }
-//            case 1: {
-//                fragment = new ShowCircleFragment();
-//                break;
-//            }
+            case 1: {
+                fragment = new AllGroupFragment();
+                break;
+            }
+            case 2: {
+                fragment = new NotificationFragment();
+                break;
+            }
             default:{
                 fragment = new MyGroupFragment2();
                 break;
@@ -111,5 +205,8 @@ public class LoggedinActivity extends ActionBarActivity {
         }
     }
 
-
+    @Override
+    public void onBackPressed(){
+        //To do nothing
+    }
 }
